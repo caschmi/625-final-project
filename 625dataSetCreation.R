@@ -18,7 +18,6 @@ deathData_White = read.delim("Underlying Cause of Death, 2018-2021, White.txt")
 data = list(deathData_AmInd, deathData_Asian, deathData_Black, deathData_Hawaiian, deathData_MTOR, deathData_White)
 data = Reduce(function(x, y) merge(x, y, all=TRUE), data)
 
-data = data[!is.na(data$Deaths) & (data$Single.Year.Ages.Code != "NS"),]
 
-write.csv(data, "substanceDeathData.csv", row.names = FALSE)
 
+# write.csv(data, "substanceDeathData.csv", row.names = FALSE)

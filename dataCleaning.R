@@ -42,4 +42,39 @@ dataNoNA$months.numeric = yearsData * monthsData # Multiply together to get # mo
 
 detach(dataNoNA)
 
-write.csv(dataNoNA, "cleanedSubstanceData.csv")
+dataNEW = na.omit(dataNoNA)
+
+# population counts per group (i.e like death per 100,000 population)
+# use this to standardize:
+# https://www.census.gov/data/tables/time-series/demo/popest/2020s-national-detail.html
+# and click first file under "Median Age..."
+# I think we can use this census data to approximate the crude and age-adjusted rates
+
+
+
+# treat age as categorical (5 year segments ) because age as a continous variable has the implicit assumption that drug related deaths
+# changes linearly with age, which we can see is not true
+
+
+# Start the seq() argument at -1, and increment by five so the age groups are appropriately ordered.
+#
+dataNEW$ageGroup = cut(dataNEW$ages,
+                       breaks = c(seq(-1, 85, by = 5), Inf),
+                       include.lowest = TRUE,
+                       labels = c("<5", "5-9", "10-14", "15-19", "20-24",
+                                  "25-29", "30-34", "35-39", "40-44", "45-49",
+                                  "50-54", "55-59", "60-64", "65-69", "70-74",
+                                  "75-79", "80-84", ">85"))
+# Group in this way to match census data
+
+
+
+library(tidyr)
+result = dataNEW %>%
+  group_by(Gender, Single.Race.6, months.numeric, Drug.Alcohol.Induced, ageGroup) %>%
+  summarize(total_deaths = sum(Deaths)) %>%
+  ungroup()
+
+# Something looks wrong with this result. I think that there are missing age groups
+
+# write.csv(dataNoNA, "cleanedSubstanceData.csv")
