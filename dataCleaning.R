@@ -78,3 +78,20 @@ result = dataNEW %>%
 # Something looks wrong with this result. I think that there are missing age groups
 
 # write.csv(dataNoNA, "cleanedSubstanceData.csv")
+
+library(data.table)
+fivedata <- read.csv("fiveYearData.csv")
+fivedata1 <- fivedata[-c(1,2,4,6,7,10,12,14,15)]
+
+fivedata1 <- transform(
+  fivedata1, Age.Groups = ifelse(fivedata$Five.Year.Age.Groups == "< 1 year" | fivedata$Five.Year.Age.Groups == "1-4 years", "Under 5 years", fivedata$Five.Year.Age.Groups))
+
+data.merged.age <- as.data.table(fivedata1)[, sum(Deaths), by = .(Single.Race.6, Gender.Code, Drug.Alcohol.Induced, Month, Age.Groups)]
+
+
+
+
+
+
+
+
