@@ -10,3 +10,8 @@ ggplot(data = data %>%
   geom_smooth(method = "lm") +
   theme_bw() +
   aes(color = Drug.Alcohol.Induced)
+
+sum(data[(data$months.numeric > 36) & (data$Drug.Alcohol.Induced == "Drug-induced causes"), ]$Deaths)
+
+data$Deaths[data$months.numeric > 36, ]
+

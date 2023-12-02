@@ -21,3 +21,19 @@ data = Reduce(function(x, y) merge(x, y, all=TRUE), data)
 
 
 # write.csv(data, "substanceDeathData.csv", row.names = FALSE)
+
+# population counts per group (i.e like death per 100,000 population)
+# use this to standardize:
+# https://www.census.gov/data/tables/time-series/demo/popest/2020s-national-detail.html
+# and click first file under "Median Age..."
+# I think we can use this census data to approximate the crude and age-adjusted rates
+
+
+
+# treat age as categorical (5 year segments ) because age as a continous variable has the implicit assumption that drug related deaths
+# changes linearly with age, which we can see is not true
+
+
+
+test1 = read.delim("test1.txt")
+read
