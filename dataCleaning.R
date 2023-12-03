@@ -79,6 +79,8 @@ result = dataNEW %>%
 
 # write.csv(dataNoNA, "cleanedSubstanceData.csv")
 
+#MERGING PEOPLE BELOW 5
+
 library(data.table)
 fivedata <- read.csv("fiveYearData.csv")
 fivedata1 <- fivedata[-c(1,2,4,6,7,10,12,14,15)]
