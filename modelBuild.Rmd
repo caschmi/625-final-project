@@ -12,6 +12,12 @@ library(MASS)
 
 ```{r loadData}
 final <- read.csv("finalModelData.csv")
+
+final$Race <- relevel(as.factor(final$Race), ref = "White")
+final$Gender <- relevel(as.factor(final$Gender), ref = "M")
+final$Cause_of_Death <- relevel(as.factor(final$Cause_of_Death), ref = "All other non-drug and non-alcohol causes")
+final$Age <- relevel(as.factor(final$Age), ref = "Under 5 years")
+final$COVID <- as.factor(final$COVID)
 ```
 
 ```{r}
@@ -29,7 +35,7 @@ var(final$Deaths, na.rm = T)
 ```{r model}
 #first model: no interactions ----
 #first try Poisson
-modelP1 <- glm(Deaths ~ as.factor(Cause_of_Death) + as.factor(Gender) + as.factor(Age) + as.factor(Race) + COVID + offset(log(Population)),
+modelP1 <- glm(Deaths ~ Cause_of_Death + Gender + Age + Race + COVID + offset(log(Population)),
                family = "poisson"(link = "log"),
                data = final)
 summary(modelP1)
@@ -40,10 +46,15 @@ modelP1$deviance/modelP1$df.residual #117.2301 > 1, so we have an issue with ove
 
 
 #now try Neg Binomial
-modelNB1 <- glm.nb(Deaths ~ as.factor(Cause_of_Death) + as.factor(Gender) + as.factor(Age) + as.factor(Race) + offset(log(Population)), 
+modelNB1 <- glm.nb(Deaths ~ Cause_of_Death + Gender + Age + Race + COVID + offset(log(Population)), 
                  link = log,
                  data = final)
 
 summary(modelNB1)
+
+
+```
+```{r}
+#next models: interactions
 ```
 
