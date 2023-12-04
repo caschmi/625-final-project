@@ -12,6 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r dependency}
 library(dplyr)
 library(readxl)
+library(tidyr)
 library(lubridate)
 ```
 
