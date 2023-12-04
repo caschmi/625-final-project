@@ -56,5 +56,11 @@ summary(modelNB1)
 ```
 ```{r}
 #next models: interactions
+modelNB2 <- glm.nb(Deaths ~ Cause_of_Death + Gender + Age + Race + COVID + Cause_of_Death:COVID + offset(log(Population)), 
+                 link = log,
+                 data = final)
+
+summary(modelNB2)
+
 ```
 
