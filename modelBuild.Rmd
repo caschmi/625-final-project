@@ -9,4 +9,27 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r loadData}
+final <- read.csv("finalModelData.csv")
+```
+
+```{r}
+#check for na values
+sum(is.na(final))
+
+#looking at distribution of response/ check for overdispersion and excess zeros
+hist(final$Deaths)
+length(final[final$Deaths == 0,])
+mean(final$Deaths, na.rm = T)
+var(final$Deaths, na.rm = T)
+
+```
+```{r model}
+#first model: no interactions
+model1 <- glm(Deaths ~ as.factor(Cause_of_Death) + as.factor(Gender) + as.factor(Age) + as.factor(Race) + offset(Population), 
+              family = 'poisson'(link = 'log'), 
+              data = final)
+
+summary(model1)
+```
 
