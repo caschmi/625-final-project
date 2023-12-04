@@ -29,6 +29,9 @@ dataCensus$y2018 = ceiling(dataCensus$y2019 * inFactor)
 
 colnames(dataCensus) = c("Race", "Age", "Gender", "2020", "2021", "2022", "2019", "2018") 
 
+dataCensus$Race = ifelse(dataCensus$Race == "Black", "Black or African American", dataCensus$Race)
+unique(dataCensus$Race)
+
 # Pivot data to long format to match death data
 dataCensus_final = select(dataCensus, -"2022") %>%
   pivot_longer(cols = c("2018", "2019", "2020", "2021"), 
@@ -49,6 +52,8 @@ colnames(data.merged.age) = c("Race", "Gender", "Cause_of_Death", "Month", "Age"
 
 dataFinal  = left_join(data.merged.age, dataCensus_final, by = c("Year", "Age", "Gender", "Race"))
 
-head(dataFinal)
+write.csv(dataFinal, "finalModelData.csv")
+
+# dataFinal[which(is.na(dataFinal)), ]
 ```
 
