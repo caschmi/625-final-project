@@ -46,6 +46,8 @@ data.merged.age$year = lubridate::dmy(paste0("01 ", data.merged.age$Month)) %>%
 # Match column names to census data
 colnames(data.merged.age) = c("Race", "Gender", "Cause_of_Death", "Month", "Age", "Deaths", "Year")
 
-finalData = left_join(data.merged.age, dataCensus_final, by = c("Year", "Age", "Gender", "Race"))
+dataFinal  = left_join(data.merged.age, dataCensus_final, by = c("Year", "Age", "Gender", "Race"))
+
+head(dataFinal)
 ```
 
