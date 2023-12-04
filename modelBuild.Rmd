@@ -7,6 +7,7 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(MASS)
 ```
 
 ```{r loadData}
@@ -18,6 +19,7 @@ final <- read.csv("finalModelData.csv")
 sum(is.na(final))
 
 #looking at distribution of response/ check for overdispersion and excess zeros
+summary(final$Deaths, na.rm = T)
 hist(final$Deaths)
 length(final[final$Deaths == 0,])
 mean(final$Deaths, na.rm = T)
@@ -25,11 +27,23 @@ var(final$Deaths, na.rm = T)
 
 ```
 ```{r model}
-#first model: no interactions
-model1 <- glm(Deaths ~ as.factor(Cause_of_Death) + as.factor(Gender) + as.factor(Age) + as.factor(Race) + offset(Population), 
-              family = 'poisson'(link = 'log'), 
-              data = final)
+#first model: no interactions ----
+#first try Poisson
+modelP1 <- glm(Deaths ~ as.factor(Cause_of_Death) + as.factor(Gender) + as.factor(Age) + as.factor(Race) + COVID + offset(log(Population)),
+               family = "poisson"(link = "log"),
+               data = final)
+summary(modelP1)
+anova(modelP1)
 
-summary(model1)
+#check for overdispersion pt 2
+modelP1$deviance/modelP1$df.residual #117.2301 > 1, so we have an issue with overdispersion
+
+
+#now try Neg Binomial
+modelNB1 <- glm.nb(Deaths ~ as.factor(Cause_of_Death) + as.factor(Gender) + as.factor(Age) + as.factor(Race) + offset(log(Population)), 
+                 link = log,
+                 data = final)
+
+summary(modelNB1)
 ```
 
