@@ -1,0 +1,51 @@
+---
+title: "Merging Census Data"
+author: "Casey Schmidt"
+date: "2023-12-03"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r dependency}
+library(dplyr)
+library(readxl)
+library(lubridate)
+```
+
+
+```{r census data}
+dataCensus = read_xlsx("Census_Data.xlsx")
+colnames(dataCensus) = c("Race", "Age", "Gender", "y2020", "y2021", "y2022")
+
+# Calculating the inflation / deflation factor for the populations across years 
+inFactor = mean(mean(dataCensus$y2020 / dataCensus$y2021), mean(dataCensus$y2021 / dataCensus$y2022))
+
+dataCensus$y2019 = ceiling(dataCensus$y2020 * inFactor)
+dataCensus$y2018 = ceiling(dataCensus$y2019 * inFactor)
+
+colnames(dataCensus) = c("Race", "Age", "Gender", "2020", "2021", "2022", "2019", "2018") 
+
+# Pivot data to long format to match death data
+dataCensus_final = select(dataCensus, -"2022") %>%
+  pivot_longer(cols = c("2018", "2019", "2020", "2021"), 
+               names_to = "Year", 
+               values_to = "Population")
+
+dataCensus_final$Year = as.numeric(dataCensus_final$Year)
+
+```
+
+```{r death data}
+# Extract year from Month column to match 
+data.merged.age$year = lubridate::dmy(paste0("01 ", data.merged.age$Month)) %>%
+  lubridate::year()
+
+# Match column names to census data
+colnames(data.merged.age) = c("Race", "Gender", "Cause_of_Death", "Month", "Age", "Deaths", "Year")
+
+finalData = left_join(data.merged.age, dataCensus_final, by = c("Year", "Age", "Gender", "Race"))
+```
+
