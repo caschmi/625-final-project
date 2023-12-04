@@ -34,6 +34,3 @@ data = Reduce(function(x, y) merge(x, y, all=TRUE), data)
 # changes linearly with age, which we can see is not true
 
 
-
-test1 = read.delim("test1.txt")
-read
