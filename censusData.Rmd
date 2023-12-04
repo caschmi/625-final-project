@@ -52,8 +52,20 @@ colnames(data.merged.age) = c("Race", "Gender", "Cause_of_Death", "Month", "Age"
 
 dataFinal  = left_join(data.merged.age, dataCensus_final, by = c("Year", "Age", "Gender", "Race"))
 
+
+dataFinal[dataFinal$Deaths == max(dataFinal$Deaths, na.rm = TRUE),]
+
+dates = lubridate::dmy(paste0("01 ", dataFinal$Month))
+
+yearsData = lubridate::year(dates) - 2017 # subtract 2017 to adjust for first year being 2018
+monthsData = lubridate::month(dates) # Extract month in number
+
+dataFinal$months.numeric = 12 * (year(dates)-2018) + month(dates)
+dataFinal[dataFinal$Month == "Mar., 2020"]
+
+dataFinal$COVID = ifelse(dataFinal$months.numeric < 27, 0, 1)
+
 write.csv(dataFinal, "finalModelData.csv")
 
-# dataFinal[which(is.na(dataFinal)), ]
 ```
 
