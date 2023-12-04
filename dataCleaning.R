@@ -88,12 +88,15 @@ fivedata1 <- fivedata[-c(1,2,4,6,7,10,12,14,15)]
 fivedata1 <- transform(
   fivedata1, Age.Groups = ifelse(fivedata$Five.Year.Age.Groups == "< 1 year" | fivedata$Five.Year.Age.Groups == "1-4 years", "Under 5 years", fivedata$Five.Year.Age.Groups))
 
+#MERGING PEOPLE ABOVE 85 "85 years and over"
+
+fivedata1 <- transform(
+  fivedata1, Age.Groups = ifelse(fivedata1$Five.Year.Age.Groups == "85-89 years" | fivedata1$Five.Year.Age.Groups == "90-94 years"| fivedata1$Five.Year.Age.Groups == "95-99 years"| fivedata1$Five.Year.Age.Groups == "100+ years", "85 years and over", fivedata1$Age.Groups))
+
+#combining data for below 5 and above 85
+
 data.merged.age <- as.data.table(fivedata1)[, sum(Deaths), by = .(Single.Race.6, Gender.Code, Drug.Alcohol.Induced, Month, Age.Groups)]
-
-
-
-
-
+colnames(data.merged.age)[6] <- "Deaths"
 
 
 
