@@ -2,7 +2,9 @@
 title: "Merging Census Data"
 author: "Casey Schmidt"
 date: "2023-12-03"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -30,7 +32,6 @@ dataCensus$y2018 = ceiling(dataCensus$y2019 * inFactor)
 colnames(dataCensus) = c("Race", "Age", "Gender", "2020", "2021", "2022", "2019", "2018") 
 
 dataCensus$Race = ifelse(dataCensus$Race == "Black", "Black or African American", dataCensus$Race)
-unique(dataCensus$Race)
 
 # Pivot data to long format to match death data
 dataCensus_final = select(dataCensus, -"2022") %>%
@@ -44,10 +45,12 @@ dataCensus_final$Year = as.numeric(dataCensus_final$Year)
 
 ```{r death data}
 # Extract year from Month column to match 
+data.merged.age = read.csv("MergedData.csv")
 data.merged.age$year = lubridate::dmy(paste0("01 ", data.merged.age$Month)) %>%
   lubridate::year()
 
 # Match column names to census data
+data.merged.age = select(data.merged.age, by = -"X")
 colnames(data.merged.age) = c("Race", "Gender", "Cause_of_Death", "Month", "Age", "Deaths", "Year")
 
 dataFinal  = left_join(data.merged.age, dataCensus_final, by = c("Year", "Age", "Gender", "Race"))
@@ -61,11 +64,23 @@ yearsData = lubridate::year(dates) - 2017 # subtract 2017 to adjust for first ye
 monthsData = lubridate::month(dates) # Extract month in number
 
 dataFinal$months.numeric = 12 * (year(dates)-2018) + month(dates)
-dataFinal[dataFinal$Month == "Mar., 2020"]
 
 dataFinal$COVID = ifelse(dataFinal$months.numeric < 27, 0, 1)
 
-write.csv(dataFinal, "finalModelData.csv")
+# write.csv(dataFinal, "finalModelData.csv")
 
+
+
+```
+
+\newpage
+
+```{r}
+library(knitr)
+fivedata = read.csv("fiveYearData.csv")
+set.seed(625)
+sampleData = sample_n(select(fivedata, by = c("Five.Year.Age.Groups", "Single.Race.6", "Drug.Alcohol.Induced", "Month", "Deaths", "Population")), 10)
+colnames(sampleData) = c("Age", "Race", "Cause of Death", "Month", "Deaths", "Population")
+knitr::kable(sampleData)
 ```
 

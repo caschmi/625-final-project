@@ -98,5 +98,6 @@ fivedata1 <- transform(
 data.merged.age <- as.data.table(fivedata1)[, sum(Deaths), by = .(Single.Race.6, Gender.Code, Drug.Alcohol.Induced, Month, Age.Groups)]
 colnames(data.merged.age)[6] <- "Deaths"
 
+write.csv(data.merged.age, "MergedData.csv")
 
 

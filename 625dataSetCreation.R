@@ -32,5 +32,7 @@ data = Reduce(function(x, y) merge(x, y, all=TRUE), data)
 
 # treat age as categorical (5 year segments ) because age as a continous variable has the implicit assumption that drug related deaths
 # changes linearly with age, which we can see is not true
-
-
+library(knitr)
+png()
+knitr::kable(sample_n(fivedata, 10))
+dev.off()
