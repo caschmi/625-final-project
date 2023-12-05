@@ -9,6 +9,9 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 library(MASS)
 library(lmtest)
+library(ggplot2)
+library(car)
+library(knitr)
 ```
 
 
@@ -31,6 +34,9 @@ sum(is.na(final))
 #looking at distribution of response/ check for overdispersion and excess zeros
 summary(final$Deaths, na.rm = T)
 hist(final$Deaths)
+ggplot(final, aes(x = Deaths)) + 
+  geom_histogram(binwidth = 5000) +
+  ggtitle("Histogram of Deaths")
 
 length(final[final$Deaths == 0,]) #check for excess zeros
 
@@ -48,7 +54,7 @@ summary(modelP1)
 anova(modelP1)
 
 #check for overdispersion pt 2
-modelP1$deviance/modelP1$df.residual #117.2301 > 1, so we have an issue with overdispersion
+modelP1$deviance/modelP1$df.residual #111.4576 > 1, so we have an issue with overdispersion
 
 
 #now try Neg Binomial
@@ -57,7 +63,8 @@ modelNB1 <- glm.nb(Deaths ~ Cause_of_Death + Gender + Age + Race + COVID + offse
                  data = final)
 
 summary(modelNB1)
-
+anova(modelNB1)
+modelNB1$deviance/modelNB1$df.residual #1.083095 or approx = 1
 
 ```
 ```{r}
@@ -67,9 +74,22 @@ modelNB2 <- glm.nb(Deaths ~ Cause_of_Death + Gender + Age + Race + COVID + Cause
                  data = final)
 
 summary(modelNB2)
+anova(modelNB2)
+Anova(modelNB2)
+
+modelNB2$deviance/modelNB2$df.residual
 
 #check for improved model fit
-lrtest(modelNB1, modelNB2) #model with interactions has better fit
+lmtest::lrtest(modelNB1, modelNB2) #model with interactions has better fit
+
+#model diagnostics:
+NB2_vif <- vif(modelNB2)
+kable(NB2_vif)
+
+res <- residuals(modelNB2, type = 'pearson')
+fitted <- modelNB2$fitted.values
+df <- data.frame(res = res, fitted = fitted)
+ggplot(df, aes(x = fitted, y = res)) + geom_point()
 
 ```
 
