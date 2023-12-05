@@ -1,10 +1,18 @@
 install.packages("shiny")
 install.packages("MASS")
+install.packages("RColorBrewer")
+library(RColorBrewer)
 library(shiny)
 library(MASS)
+library(ggplot2)
 Final <- read.csv("finalModelData.csv")
+Final$Covid <- ifelse(Final$COVID == 1, "Covid", "Pre-covid")
 
-
+Final$Race <- relevel(as.factor(Final$Race), ref = "White")
+Final$Gender <- relevel(as.factor(Final$Gender), ref = "M")
+Final$Cause_of_Death <- relevel(as.factor(Final$Cause_of_Death), ref = "All other non-drug and non-alcohol causes")
+Final$Age <- relevel(as.factor(Final$Age), ref = "Under 5 years")
+Final$COVID <- as.factor(Final$COVID)
 
 
 
@@ -26,6 +34,9 @@ main_page <- tabPanel(
         ),
         tabPanel(
           title = "Residual Plots", plotOutput("plot")
+        ),
+        tabPanel(
+          title = "ANOVA", verbatimTextOutput("anova")
         )
       )
     )
@@ -40,8 +51,8 @@ plots_page <- tabPanel(
   sidebarLayout(
     sidebarPanel(
       title = "Inputs",
-      selectInput('x_axis', 'Select the x variable', choices = names(Final)),
-      selectizeInput('y_axis', 'Select the y variable', choices = names(Final)),
+      selectizeInput('y_axis', 'Select the y variable', choices = c("Population", "Deaths")),
+      selectInput('stratification', 'Select the variable to stratify on', choices = c("Race", "Gender", "Cause_of_Death", "Age", "Covid")),
       actionButton("create_plot", "Create Plot")
     ),
     mainPanel(
@@ -57,6 +68,7 @@ server <- function(input, output) {
     outcome <- input$Outcome
 
     #run the regression model
+    #specify which groups in the categorical variables should be reference
     model <- glm.nb(as.formula(paste(outcome, "~", paste(predictors, collapse = "+"), "+", "offset(log(Final$Population))")),
                     link = log,
                     data = Final)
@@ -67,16 +79,26 @@ server <- function(input, output) {
     output$plot <- renderPlot({
       plot(fitted(model), resid(model))
     })
+    output$anova <- renderPrint({
+      anova(model)
+    })
   })
   observeEvent(input$create_plot, {
-      x_var <- input$x_axis
+      strat <- input$stratification
+      Stratification <- Final[[strat]]
       y_var <- input$y_axis
+      y_vars <- Final[[y_var]]
 
       #create plot
       output$exp_plot <- renderPlot({
-        plot(Final[[x_var]],Final[[y_var]],
-             xlim = range(Final[[x_var]], na.rm = TRUE),
-             ylim = range(Final[[y_var]], na.rm = TRUE))
+        ggplot(Final, aes(y = y_vars,
+                          x = Year, group = Stratification)) +
+          stat_summary(aes(color = Stratification, linetype = Stratification),
+                       geom = "line", fun.y = mean, linewidth = 1) +
+          stat_summary(aes(shape = Stratification), geom = "point",
+                       fun.y = mean, size = 2) + xlab("Years") +
+          ylab(paste(y_var)) +
+          scale_color_brewer(palette = "Dark2")
       }
       )
   })
@@ -90,4 +112,8 @@ ui <- navbarPage(
 
 
 shinyApp(ui, server)
+
+
+
+
 
