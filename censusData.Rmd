@@ -24,7 +24,7 @@ dataCensus = read_xlsx("Census_Data.xlsx")
 colnames(dataCensus) = c("Race", "Age", "Gender", "y2020", "y2021", "y2022")
 
 # Calculating the inflation / deflation factor for the populations across years 
-inFactor = mean(mean(dataCensus$y2020 / dataCensus$y2021), mean(dataCensus$y2021 / dataCensus$y2022))
+inFactor = dataCensus$y2020 / dataCensus$y2021
 
 dataCensus$y2019 = ceiling(dataCensus$y2020 * inFactor)
 dataCensus$y2018 = ceiling(dataCensus$y2019 * inFactor)
