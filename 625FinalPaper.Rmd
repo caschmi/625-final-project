@@ -1,0 +1,22 @@
+---
+title: "625FinalPaper"
+author: "Caitlin Seibel"
+date: "2023-12-11"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\section{Introduction}
+
+
+\section{Methods}
+
+
+
+\section{Results}
+
+
+\section{Discussion}
