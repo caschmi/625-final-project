@@ -18,3 +18,7 @@ Also, CDC can export data in 5 year age groups, but they do not group it in the 
 Census data can be found here: https://www.census.gov/data/tables/time-series/demo/popest/2020s-national-detail.html
 
 <img width="639" alt="censusDataLocation" src="https://github.com/caschmi/625-final-project/assets/148912328/3361e4a0-da8a-4187-ad73-73e27edd5398">
+
+Link to the report: 
+
+https://www.overleaf.com/1232859622dxpkfbcshwch#120396
