@@ -13,6 +13,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 library(gtsummary)
 library(tableone)
+library(kableExtra)
 dataFinal = read.csv("finalModelData.csv")
 ```
 
@@ -36,7 +37,9 @@ dataFinal %>%
   select(Age, Cause_of_Death, Gender, Race) %>%
   tbl_summary(label = list(Cause_of_Death ~ "Cause of Death"))
 
-kableone(CreateTableOne(data = dataFinal, vars = c("Deaths", "Cause_of_Death", "Age", "Race", "Gender", "COVID")))
+kableone(CreateTableOne(data = dataFinal, vars = c("Deaths", "Cause_of_Death", "Age", "Race", "Gender", "COVID")), booktabs = T) %>%
+  add_indent(positions = c(4:6, 8:24, 26:31)) %>% 
+  kable_paper()
 
 ```
 
