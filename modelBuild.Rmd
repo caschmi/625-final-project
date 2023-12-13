@@ -83,7 +83,7 @@ modelNB2$deviance/modelNB2$df.residual
 lmtest::lrtest(modelNB1, modelNB2) #model with interactions has better fit
 
 #trying more interaction terms between cause_of_death and demographic factors
-modelNB3 <- glm.nb(Deaths ~ Cause_of_Death + Gender + Age + Race + COVID + Cause_of_Death:COVID + Cause_of_Death:Gender + Cause_of_Death:Race + offset(log(Population)), 
+modelNB3 <- glm.nb(Deaths ~ Cause_of_Death + Gender + Age + Race + COVID + Cause_of_Death:COVID + Cause_of_Death:Gender + offset(log(Population)), 
                  link = log,
                  data = final)
 summary(modelNB3)
@@ -95,6 +95,9 @@ lmtest::lrtest(modelNB1, modelNB3)
 #model diagnostics:
 NB2_vif <- vif(modelNB2)
 kable(NB2_vif)
+
+NB3_vif <- vif(modelNB3)
+kable(NB3_vif)
 
 res <- residuals(modelNB2, type = 'pearson')
 fitted <- modelNB2$fitted.values

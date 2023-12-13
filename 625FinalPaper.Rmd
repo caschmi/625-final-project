@@ -33,9 +33,9 @@ dataFinal$Cause_of_Death <- relevel(as.factor(dataFinal$Cause_of_Death), ref = "
 dataFinal$Age <- relevel(as.factor(dataFinal$Age), ref = "Under 5 years")
 dataFinal$COVID <- as.factor(dataFinal$COVID)
 
-dataFinal %>%
-  select(Age, Cause_of_Death, Gender, Race) %>%
-  tbl_summary(label = list(Cause_of_Death ~ "Cause of Death"))
+#dataFinal %>%
+  #select(Age, Cause_of_Death, Gender, Race) %>%
+  #tbl_summary(label = list(Cause_of_Death ~ "Cause of Death"))
 
 kableone(CreateTableOne(data = dataFinal, vars = c("Deaths", "Cause_of_Death", "Age", "Race", "Gender", "COVID")), booktabs = T) %>%
   add_indent(positions = c(4:6, 8:24, 26:31)) %>% 
