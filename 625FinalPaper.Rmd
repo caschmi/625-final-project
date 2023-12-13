@@ -2,15 +2,34 @@
 title: "625FinalPaper"
 author: "Caitlin Seibel"
 date: "2023-12-11"
-output: pdf_document
+output:
+  word_document: default
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(gtsummary)
+dataFinal = read.csv("finalModelData.csv")
 ```
 
 \section{Introduction}
 
+```{r, echo=FALSE, message=FALSE}
+
+dataFinal = na.omit(dataFinal)
+
+dataFinal$Gender = ifelse(dataFinal$Gender == "M", "Male", "Female")
+dataFinal$Ages = dataFinal$Age
+dataFinal$Age = factor(dataFinal$Age, levels = unique(dataFinal$Age))
+
+dataFinal %>%
+  select(Age, Cause_of_Death, Gender, Race) %>%
+  tbl_summary(label = list(Cause_of_Death ~ "Cause of Death"))
+
+
+```
 
 \section{Methods}
 \subsection{Data Preprocessing}
