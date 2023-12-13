@@ -3,14 +3,16 @@ title: "625FinalPaper"
 author: "Caitlin Seibel"
 date: "2023-12-11"
 output:
-  word_document: default
+  pdf_document: default
   html_document:
     df_print: paged
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(gtsummary)
+library(tableone)
 dataFinal = read.csv("finalModelData.csv")
 ```
 
@@ -24,10 +26,17 @@ dataFinal$Gender = ifelse(dataFinal$Gender == "M", "Male", "Female")
 dataFinal$Ages = dataFinal$Age
 dataFinal$Age = factor(dataFinal$Age, levels = unique(dataFinal$Age))
 
+dataFinal$Race <- relevel(as.factor(dataFinal$Race), ref = "White")
+dataFinal$Gender <- relevel(as.factor(dataFinal$Gender), ref = "Male")
+dataFinal$Cause_of_Death <- relevel(as.factor(dataFinal$Cause_of_Death), ref = "All other non-drug and non-alcohol causes")
+dataFinal$Age <- relevel(as.factor(dataFinal$Age), ref = "Under 5 years")
+dataFinal$COVID <- as.factor(dataFinal$COVID)
+
 dataFinal %>%
   select(Age, Cause_of_Death, Gender, Race) %>%
   tbl_summary(label = list(Cause_of_Death ~ "Cause of Death"))
 
+kableone(CreateTableOne(data = dataFinal, vars = c("Deaths", "Cause_of_Death", "Age", "Race", "Gender", "COVID")))
 
 ```
 
