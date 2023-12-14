@@ -25,6 +25,7 @@ main_page <- tabPanel(
       title = "Inputs",
       selectInput('Outcome', 'Select the outcome variable', choices = names(Final)),
       selectizeInput('Predictors', 'Select the predictor variable/s', choices = names(Final), multiple=TRUE),
+      selectInput("interaction_terms", "Select Interaction Terms", choices = colnames(Final), multiple = TRUE),
       actionButton("run_regression", "Run Regression")
     ),
     mainPanel(
@@ -51,7 +52,7 @@ plots_page <- tabPanel(
   sidebarLayout(
     sidebarPanel(
       title = "Inputs",
-      selectizeInput('y_axis', 'Select the y variable', choices = c("Population", "Deaths")),
+      selectizeInput('y_axis', 'Select the y variable', choices = c("Population", "Deaths", "Alcohol-Related Deaths", "Drug-Related Deaths")),
       selectInput('stratification', 'Select the variable to stratify on', choices = c("Race", "Gender", "Cause_of_Death", "Age", "Covid")),
       actionButton("create_plot", "Create Plot")
     ),
@@ -66,12 +67,19 @@ server <- function(input, output) {
   observeEvent(input$run_regression, {
     predictors <- input$Predictors
     outcome <- input$Outcome
+    interactions <- input$interaction_terms
+
+    formula_string <- paste0(outcome, " ~ ", paste(predictors, collapse = " + "), "+", "offset(log(Final$Population))")
+
+    # Add interaction terms
+    if (!is.null(input$interaction_terms)) {
+      interaction_formula <- paste(input$interaction_terms, collapse = "*")
+      formula_string <- paste0(formula_string, " + ", interaction_formula)
+    }
 
     #run the regression model
     #specify which groups in the categorical variables should be reference
-    model <- glm.nb(as.formula(paste(outcome, "~", paste(predictors, collapse = "+"), "+", "offset(log(Final$Population))")),
-                    link = log,
-                    data = Final)
+    model <- glm.nb(as.formula(formula_string), link = log, data = Final)
 
     output$model_summary <- renderPrint({
       summary(model)
@@ -85,9 +93,24 @@ server <- function(input, output) {
   })
   observeEvent(input$create_plot, {
       strat <- input$stratification
-      Stratification <- Final[[strat]]
       y_var <- input$y_axis
+
+      if (y_var == "Population" | y_var == "Deaths") {
       y_vars <- Final[[y_var]]
+      Stratification <- Final[[strat]]
+      }
+
+      if (y_var == "Alcohol-Related Deaths") {
+        Final <- subset(Final, Cause_of_Death == "Alcohol-induced causes")
+        y_vars <- Final[["Deaths"]]
+        Stratification <- Final[[strat]]
+      }
+
+      if (y_var == "Drug-Related Deaths") {
+        Final <- subset(Final, Cause_of_Death == "Drug-induced causes")
+        y_vars <- Final[["Deaths"]]
+        Stratification <- Final[[strat]]
+      }
 
       #create plot
       output$exp_plot <- renderPlot({
