@@ -4,7 +4,6 @@ author: "Caitlin Seibel"
 date: "2023-12-11"
 output:
   pdf_document: default
-  
 ---
 
 ```{r setup, include=FALSE}
@@ -15,18 +14,27 @@ library(knitr)
 library(rmarkdown)
 library(kableExtra)
 library(ggplot2)
+library(magick)
 
 dataFinal = read.csv("finalModelData.csv")
 ```
 
 \section{Introduction}
 
-Illicit substance use is known to have several health related consequences, including cardiovascular disease, cancer, and death [https://nida.nih.gov/publications/drugs-brains-behavior-science-addiction/addiction-
+```{=latex}
+\begin{minipage}[t]{0.5\linewidth}
+```
+
+|          Illicit substance use is known to have several health related consequences, including cardiovascular disease, cancer, and death [https://nida.nih.gov/publications/drugs-brains-behavior-science-addiction/addiction-
 health]. Opioid misuse has risen in the United States from the first wave of prescription opioid overdoses in the 1990s to the rise of synthetic opioid use (i.e. fentanyl) in 2013 [https://www.cdc.gov/opioids/basics/epidemic.html], calling for concern on (potentially) increasing deaths from drug or alcohol related causes. We analyzed data obtained from the Centers for Disease Control and Prevention (CDC) [https://www.cdc.gov/nchs/
 fastats/alcohol.htm] and the U.S. Census Bureau [https://www.census.gov/data/tables/time-series/demo/popest/2020s-national-detail.html] to make inferences on drug and alcohol related death counts, adjusting for age, gender, racial strata, and an indicator of the COVID-19 pandemic. 
 
-Table 1 shows counts of demographic variables we have available in this data set, as well as the counts for the cause of death. Note that 65\% of deaths are from non-drug and non-alcohol induced causes since these include all deaths unrelated to drugs or alcohol. Also note that the standard deviation of the deaths is about 3800 with a approximate mean of 957, indicating high variability in the deaths. Plotting two visualizations of this shows that there is high variability in the death counts.
+|          Table 1 shows counts of demographic variables we have available in this data set, as well as the counts for the cause of death. Note that 65\% of deaths are from non-drug and non-alcohol induced causes since these include all deaths unrelated to drugs or alcohol. Also note that the standard deviation of the deaths is about 3800 with a approximate mean of 957, indicating high variability in the deaths. Plotting two visualizations of this shows that there is high variability in the death counts.
 
+```{=latex}
+\end{minipage}%
+\begin{minipage}[t]{0.5\linewidth}
+```
 ```{r Table 1, fig.align = 'right', echo=FALSE, message=FALSE}
 
 dataFinal = na.omit(dataFinal)
@@ -45,12 +53,15 @@ dataFinal$COVID <- as.factor(dataFinal$COVID)
   #select(Age, Cause_of_Death, Gender, Race) %>%
   #tbl_summary(label = list(Cause_of_Death ~ "Cause of Death"))
   
-
 kableone(CreateTableOne(data = dataFinal, vars = c("Deaths", "Cause_of_Death", "Age", "Race", "Gender", "COVID")), booktabs = T, caption = "Descriptive statistics") %>%
   add_indent(positions = c(4:6, 8:24, 26:31)) %>% 
-  kable_paper(full_width = F, font_size = 8)
-
+  kable_paper(full_width = F, font_size = 8, ) %>%
+  as_image(width = 4)
 ```
+```{=latex}
+\end{minipage}
+```
+
 
 ```{r Histogram of deaths, fig.height=3, fig.width=3, message=FALSE, echo=FALSE}
 ggplot(data = dataFinal, aes(x = Deaths)) +
@@ -60,6 +71,7 @@ ggplot(data = dataFinal, aes(x = Deaths)) +
   theme(plot.title = element_text(size=10))
 
 ```
+
 
 ```{r Plot of Death Counts over Time, echo = FALSE, message=FALSE, fig.height=3, fig.width=8}
 ggplot(data = dataFinal, aes(x = Year, y = Deaths, group = Cause_of_Death)) +
@@ -91,7 +103,7 @@ Since we are using a Poisson distribution, we need to check for overdispersion, 
 
 \subsection{RShiny App}
 
-\indent To create an interactive platform through which users can visualize different trends in the data, we created an RShiny app that offers a couple different features and methods that can be used to analyze our data. There are two overarching options in our app; regression model building and trend visualization. The main page, titled ``Analysis", is where a regression model can be built and the second page, titled ``Exploratory Plots", is where data trend visualization can be performed. 
+\indent To create an interactive platform through which users can visualize different trends in the data, we created an RShiny app that offers a couple different features and methods that can be used to analyze our data. There are two overarching options in our app; regression model building and trend visualization. The main page, titled "Analysis", is where a regression model can be built and the second page, titled "Exploratory Plots", is where data trend visualization can be performed. 
 
 The main page of the app features a couple of drop down lists to select different aspects of a regression model. You can first select the desired outcome variable from a list of all available variables in the dataset, and then you can select all of the covariates you're interested in including in the model. There is also an option to include interaction terms in the model, but this is not necessary to run the regression. Once these variables are selected, the app runs a glm in the background with a negative binomial distribution assumption and an offset of the log of the total population (see above for further model description). The first tab on this page shows the summary of the regression model, with the $\beta$ estimates, p-values, and other relevant model estimates. The second tab on this page shows the residual plot resulting from the model, with the fitted values on the x-axis and the residual values on the y-axis. The final tab on this page shows the ANOVA output of the model, giving relevant statistics for all selected variables and interaction terms. 
 
