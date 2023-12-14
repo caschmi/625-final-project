@@ -4,22 +4,25 @@ author: "Caitlin Seibel"
 date: "2023-12-11"
 output:
   pdf_document: default
-  html_document:
-    df_print: paged
-  word_document: default
+  
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(gtsummary)
 library(tableone)
+library(knitr)
+library(rmarkdown)
 library(kableExtra)
+library(ggplot2)
+
 dataFinal = read.csv("finalModelData.csv")
 ```
 
 \section{Introduction}
 
-```{r, echo=FALSE, message=FALSE}
+
+```{r Table 1, fig.align = 'right', echo=FALSE, message=FALSE}
 
 dataFinal = na.omit(dataFinal)
 
@@ -36,12 +39,33 @@ dataFinal$COVID <- as.factor(dataFinal$COVID)
 #dataFinal %>%
   #select(Age, Cause_of_Death, Gender, Race) %>%
   #tbl_summary(label = list(Cause_of_Death ~ "Cause of Death"))
+  
 
-kableone(CreateTableOne(data = dataFinal, vars = c("Deaths", "Cause_of_Death", "Age", "Race", "Gender", "COVID")), booktabs = T) %>%
+kableone(CreateTableOne(data = dataFinal, vars = c("Deaths", "Cause_of_Death", "Age", "Race", "Gender", "COVID")), booktabs = T, caption = "Descriptive statistics") %>%
   add_indent(positions = c(4:6, 8:24, 26:31)) %>% 
-  kable_paper()
+  kable_paper(full_width = F, font_size = 8)
 
 ```
+
+```{r Histogram of deaths, fig.height=3, fig.width=3, message=FALSE, echo=FALSE}
+ggplot(data = dataFinal, aes(x = Deaths)) +
+  geom_histogram() +
+  theme_bw() +
+  ggtitle("Figure 1: Distribution of Death Counts") +
+  theme(plot.title = element_text(size=10))
+
+```
+
+```{r Plot of Death Counts over Time, echo = FALSE, message=FALSE, fig.height=3, fig.width=8}
+ggplot(data = dataFinal, aes(x = Year, y = Deaths, group = Cause_of_Death)) +
+  stat_summary(aes(color = Cause_of_Death, linetype = Cause_of_Death), 
+               geom = "line", fun = mean, linewidth = 1) + 
+  theme_bw()+
+  ggtitle("Figure 2: Average Death Counts over Time by Cause of Death")
+
+```
+
+
 
 \section{Methods}
 \subsection{Data Preprocessing}
