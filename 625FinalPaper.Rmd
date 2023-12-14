@@ -25,9 +25,9 @@ dataFinal = read.csv("finalModelData.csv")
 \begin{minipage}[t]{0.5\linewidth}
 ```
 
-|          Illicit substance use is known to have several health related consequences, including cardiovascular disease, cancer, and death [1]. Opioid misuse has risen in the United States from the first wave of prescription opioid overdoses in the 1990s to the rise of synthetic opioid use (i.e. fentanyl) in 2013 [2], calling for concern on (potentially) increasing deaths from drug or alcohol related causes. We analyzed data obtained from the Centers for Disease Control and Prevention (CDC) [3] and the U.S. Census Bureau [4] to make inferences on drug and alcohol related death counts, adjusting for age, gender, racial strata, and an indicator of the COVID-19 pandemic. 
+|     Illicit substance use is known to have several health related consequences, including cardiovascular disease, cancer, and death [1]. Opioid misuse has risen in the United States from the first wave of prescription opioid overdoses in the 1990s to the rise of synthetic opioid use (i.e. fentanyl) in 2013 [2], calling for concern on (potentially) increasing deaths from drug or alcohol related causes. We analyzed data obtained from the Centers for Disease Control and Prevention (CDC) [3] and the U.S. Census Bureau [4] to make inferences on drug and alcohol related death counts, adjusting for age, gender, racial strata, and an indicator of the COVID-19 pandemic. 
 
-|          Table 1 shows counts of demographic variables we have available in this data set, as well as the counts for the cause of death. Note that 65\% of deaths are from non-drug and non-alcohol induced causes since these include all deaths unrelated to drugs or alcohol. Also note that the standard deviation of the deaths is about 3800 with a approximate mean of 957, indicating high variability in the deaths. Plotting two visualizations of this shows that there is high variability in the death counts.
+|     Table 1 shows counts of demographic variables we have available in this data set, as well as the counts for the cause of death. Note that 65\% of deaths are from non-drug and non-alcohol induced causes since these include all deaths unrelated to drugs or alcohol. Also note that the standard deviation of the deaths is about 3800 with a approximate mean of 957, indicating high variability in the deaths. Plotting two visualizations of this shows that there is high variability in the death counts.
 
 ```{=latex}
 \end{minipage}%
@@ -61,6 +61,17 @@ kableone(CreateTableOne(data = dataFinal, vars = c("Deaths", "Cause_of_Death", "
 ```
 
 
+\section{Methods}
+\subsection{Data Preprocessing}
+
+Deaths from drug or alcohol use is defined as: if drugs or alcohol was the catalyst in a series of events that led to death [2]. 2018-2021 death count data obtained from the CDC was requested based on five-year age categories, gender (male/female), six racial groups (American Indian or Alaskan Native, Asian, Black or African American, Native Hawaiian or Other Pacific Islander, White, and More Than One Race), cause of death (Drug, Alcohol, and Non-drug/non-alcohol), and month of death. Population data for these strata groupings were unavailable. 
+
+To make inferences about death-rate differences between substrata populations, 2020-2022 data obtained from the Census used similar strata as the CDC. Two differences between the data were the characterizations of the five-year age groups and monthly/yearly population counts. CDC characterized individuals who died before a year old as their own group; they also count all five year age groups up to 100 as unique groups. The Census collapses these into $<5$ and $> 85$, with unique categories for five-year groups between these ages. CDC death count data was aggregated to match the Census strata. Further, Census data was only available on yearly 2020-2022 estimates, whereas we have monthly CDC data from 2018. We assumed the population is stable throughout a given year and that the rate of change within substrata is constant between years. By these assumptions, we estimated the substrata population counts for 2018 and 2019. 
+
+```{=latex}
+\begin{minipage}[t]{0.5\linewidth}
+```
+
 ```{r Histogram of deaths, fig.height=3, fig.width=3, message=FALSE, echo=FALSE}
 ggplot(data = dataFinal, aes(x = Deaths)) +
   geom_histogram() +
@@ -70,24 +81,23 @@ ggplot(data = dataFinal, aes(x = Deaths)) +
 
 ```
 
+```{=latex}
+\end{minipage}%
+\begin{minipage}[t]{0.5\linewidth}
+```
 
-```{r Plot of Death Counts over Time, echo = FALSE, message=FALSE, fig.height=3, fig.width=8}
+```{r Plot of Death Counts over Time, echo = FALSE, message=FALSE, fig.height=8, fig.width=8}
 ggplot(data = dataFinal, aes(x = Year, y = Deaths, group = Cause_of_Death)) +
   stat_summary(aes(color = Cause_of_Death, linetype = Cause_of_Death), 
                geom = "line", fun = mean, linewidth = 1) + 
   theme_bw()+
-  ggtitle("Figure 2: Average Death Counts over Time by Cause of Death")
-
+  ggtitle("Figure 2: Average Death Counts over Time by Cause of Death") + 
+  #scale_fill_discrete(labels = c("All other causes", "Alcohol-related", "Drug-related")) +
+  theme(legend.position = "bottom") 
 ```
-
-
-
-\section{Methods}
-\subsection{Data Preprocessing}
-
-Deaths from drug or alcohol use is defined as: if drugs or alcohol was the catalyst in a series of events that led to death [2]. 2018-2021 death count data obtained from the CDC was requested based on five-year age categories, gender (male/female), six racial groups (American Indian or Alaskan Native, Asian, Black or African American, Native Hawaiian or Other Pacific Islander, White, and More Than One Race), cause of death (Drug, Alcohol, and Non-drug/non-alcohol), and month of death. Population data for these strata groupings were unavailable. 
-
-To make inferences about death-rate differences between substrata populations, 2020-2022 data obtained from the Census used similar strata as the CDC. Two differences between the data were the characterizations of the five-year age groups and monthly/yearly population counts. CDC characterized individuals who died before a year old as their own group; they also count all five year age groups up to 100 as unique groups. The Census collapses these into $<5$ and $> 85$, with unique categories for five-year groups between these ages. CDC death count data was aggregated to match the Census strata. Further, Census data was only available on yearly 2020-2022 estimates, whereas we have monthly CDC data from 2018. We assumed the population is stable throughout a given year and that the rate of change within substrata is constant between years. By these assumptions, we estimated the substrata population counts for 2018 and 2019. 
+```{=latex}
+\end{minipage}
+```
 
 Looking at the dates included in the model, we assumed that the COVID-19 pandemic will skew the death counts upwards. Plotting death counts over time, we see this assumption may hold, so we created an indicator to distinguish months before and after March 2020, which we are taking as the beginning of the COVID-19 pandemic in the U.S. 
 
