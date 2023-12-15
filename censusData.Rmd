@@ -18,7 +18,7 @@ library(tidyr)
 library(lubridate)
 ```
 
-
+This chunk of code is reading in and manipulating the census data so it matches the CDC data in order to merge. 
 ```{r census data}
 dataCensus = read_xlsx("Census_Data.xlsx")
 colnames(dataCensus) = c("Race", "Age", "Gender", "y2020", "y2021", "y2022")
@@ -43,17 +43,18 @@ dataCensus_final$Year = as.numeric(dataCensus_final$Year)
 
 ```
 
+Manipulating the CDC data and merging it with the census data. Also, manipulating the dates into a numeric format to make an indicator of COVID-19. 
 ```{r death data}
 # Extract year from Month column to match 
-data.merged.age = read.csv("MergedData.csv")
-data.merged.age$year = lubridate::dmy(paste0("01 ", data.merged.age$Month)) %>%
+dataMergedAge = read.csv("MergedData.csv")
+dataMergedAge$year = lubridate::dmy(paste0("01 ", dataMergedAge$Month)) %>%
   lubridate::year()
 
 # Match column names to census data
-data.merged.age = select(data.merged.age, by = -"X")
-colnames(data.merged.age) = c("Race", "Gender", "Cause_of_Death", "Month", "Age", "Deaths", "Year")
+dataMergedAge = select(dataMergedAge, by = -"X")
+colnames(dataMergedAge) = c("Race", "Gender", "Cause_of_Death", "Month", "Age", "Deaths", "Year")
 
-dataFinal  = left_join(data.merged.age, dataCensus_final, by = c("Year", "Age", "Gender", "Race"))
+dataFinal  = left_join(dataMergedAge, dataCensus_final, by = c("Year", "Age", "Gender", "Race"))
 
 
 dataFinal[dataFinal$Deaths == max(dataFinal$Deaths, na.rm = TRUE),]
