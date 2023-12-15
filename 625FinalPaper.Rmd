@@ -14,7 +14,6 @@ library(knitr)
 library(rmarkdown)
 library(kableExtra)
 library(ggplot2)
-library(magick)
 
 dataFinal = read.csv("finalModelData.csv")
 ```
@@ -86,14 +85,17 @@ ggplot(data = dataFinal, aes(x = Deaths)) +
 \begin{minipage}[t]{0.5\linewidth}
 ```
 
-```{r Plot of Death Counts over Time, echo = FALSE, message=FALSE, fig.height=8, fig.width=8}
-ggplot(data = dataFinal, aes(x = Year, y = Deaths, group = Cause_of_Death)) +
-  stat_summary(aes(color = Cause_of_Death, linetype = Cause_of_Death), 
+```{r Plot of Death Counts over Time, echo = FALSE, message=FALSE, fig.height=5, fig.width=5}
+dataFinal$CauseOfDeath = ifelse(dataFinal$Cause_of_Death == "All other non-drug and non-alcohol causes", "All other",
+                                ifelse(dataFinal$Cause_of_Death == "Drug-induced causes", "Drug-induced", "Alcohol-induced"))
+
+ggplot(data = na.omit(dataFinal), aes(x = Year, y = Deaths)) +
+  stat_summary(aes(color = CauseOfDeath, linetype = CauseOfDeath), 
                geom = "line", fun = mean, linewidth = 1) + 
   theme_bw()+
-  ggtitle("Figure 2: Average Death Counts over Time by Cause of Death") + 
+  ggtitle("Figure 2: Average Death Counts over Time by Cause") + 
   #scale_fill_discrete(labels = c("All other causes", "Alcohol-related", "Drug-related")) +
-  theme(legend.position = "bottom") 
+  theme(legend.position = "bottom")
 ```
 ```{=latex}
 \end{minipage}
