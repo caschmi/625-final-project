@@ -1,7 +1,7 @@
 ---
 title: "Drug and Alcohol Related Deaths: 2018-2021 CDC and Census Data Cleaning and Analysis"
 author: "Caitlin Seibel, Emily Geis, Casey Biostat"
-date: "2023-12-15"
+date: "December 15, 2023"
 output:
   pdf_document: default
 ---
