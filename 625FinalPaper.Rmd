@@ -1,5 +1,5 @@
 ---
-title: "Drug and Alcohol Related Deaths: 2018-2021 CDC and Census Data Cleaning and Analysis"
+title: "Drug and Alcohol Related Deaths: 2018-2021 CDC and Census Data Cleaning, Analysis, and RShiny App Development"
 author: "Caitlin Seibel, Emily Geis, Casey Biostat"
 date: "December 15, 2023"
 output:
